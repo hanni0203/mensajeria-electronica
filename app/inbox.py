@@ -39,7 +39,7 @@ def send():
        
         if not to_username:
             flash('To field is required')
-            return render_template(TEMP)
+            return render_template('inbox/send.html')
         
         if not subject:
             flash('Subject field is required')
@@ -47,7 +47,7 @@ def send():
         
         if not body:
             flash('Body field is required')
-            return render_template(TEMP)    
+            return render_template('inbox/send.html')    
         
         error = None    
         userto = None 
