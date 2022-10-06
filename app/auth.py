@@ -266,7 +266,7 @@ def login():
             if not password:
                 error = 'Password Field Required'
                 flash(error)
-                return render_template(TEMP)
+                return render_template('auth/login.html')
 
             db = get_db()
             error = None
@@ -286,7 +286,7 @@ def login():
 
             flash(error)
 
-        return render_template(TEMP)
+        return render_template('auth/login.html')
     except:
         return render_template('auth/login.html')
         
@@ -299,7 +299,7 @@ def load_logged_in_user():
         g.user = None
     else:
         g.user = get_db().execute(
-            QUERY, (user_id,)
+            'SELECT * FROM user WHERE id = ?', (user_id,)
         ).fetchone()
 
         
