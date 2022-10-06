@@ -187,7 +187,7 @@ def change():
             
             db = get_db()
             attempt = db.execute(
-                QUERY, (number, utils.F_ACTIVE)
+                'SELECT id from forgotlink WHERE challenge=? AND state=?', (number, utils.F_ACTIVE)
             ).fetchone()
             
             if attempt is not None:
@@ -195,7 +195,7 @@ def change():
         
         return render_template('auth/forgot.html')
     except:
-        return render_template(TEMP)
+        return render_template('auth/change.html')
 
 
 @bp.route('/forgot', methods=('GET', 'POST'))
@@ -214,18 +214,18 @@ def forgot():
 
             db = get_db()
             user = db.execute(
-                QUERY, (email,)
+                'SELECT id FROM user WHERE email=?', (email,)
             ).fetchone()
 
             if user is not None:
                 number = hex(random.getrandbits(512))[2:]
                 
                 db.execute(
-                    QUERY,
+                    'SELECT id FROM forgotlink WHERE state=? AND userid=?',
                     (utils.F_INACTIVE, user['id'])
                 )
                 db.execute(
-                    QUERY,
+                    'UPDATE forgotlink SET (challenge=?, state=?) WHERE userid=?',
                     (user['id'], number, utils.F_ACTIVE)
                 )
                 db.commit()
@@ -245,7 +245,7 @@ def forgot():
 
         return render_template('auth/forgot.html')
     except:
-        return render_template(TEMP)
+        return render_template('auth/login.html')
 
 
 @bp.route('/login', methods=('GET', 'POST'))
