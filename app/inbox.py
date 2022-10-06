@@ -18,10 +18,12 @@ def getDB():
 def show():
     db = get_db()
     messages = db.execute(
-        QUERY
+        'SELECT message.from_id, message.to_id, user.username, message.created,'
+        ' message.subject, message.body FROM [user] LEFT JOIN message ON user.id = message.from_id'
+        ' WHERE message.to_id=?',(g.user['id'], )
     ).fetchall()
 
-    return render_template(TEMP, messages=messages)
+    return render_template('inbox/show.html', messages=messages)
 
 
 @bp.route('/send', methods=('GET', 'POST'))
