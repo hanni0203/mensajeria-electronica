@@ -182,13 +182,17 @@ def change():
         if g.user:
             return redirect(url_for('inbox.show'))
         
-        if request.method == 'POST': 
+        if request.method == 'GET':
+            
+            
+
             number = request.args['auth'] 
             
             db = get_db()
             attempt = db.execute(
                 'SELECT id from forgotlink WHERE challenge=? AND state=?', (number, utils.F_ACTIVE)
             ).fetchone()
+            
             
             if attempt is not None:
                 return render_template('auth/change.html', number=number)
@@ -218,22 +222,22 @@ def forgot():
             ).fetchone()
 
 
-            if user is not None:
-                number = hex(random.getrandbits(512))[2:]
-                
-                #db.execute(
-                #    'INSERT INTO forgotlink (state, userid) VALUES (?,?)', 
-                #   (utils.F_INACTIVE, user['id'])
-                #)
+            if user is not None:                
+                number = hex(random.getrandbits(512))[2:]                
+                db.execute(
+                    'UPDATE forgotlink SET state=? WHERE userid=?', 
+                   (utils.F_INACTIVE, user['id'])
+                )                            
+
                 db.execute(
                     'INSERT INTO forgotlink (userid, challenge, state) VALUES (?,?,?)',
                     (user['id'], number, utils.F_ACTIVE)
                 )
-                db.commit()
-                
+                db.commit()                
+
                 credentials = db.execute(
                     'Select user,password from credentials where name=?',(utils.EMAIL_APP, )
-                ).fetchone()
+                ).fetchone()                
                 
                 content = 'Hello there, to change your password, please click on this link ' + flask.url_for('auth.change', _external=True) + '?auth=' + number
                 
