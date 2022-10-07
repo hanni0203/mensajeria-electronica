@@ -53,7 +53,7 @@ def send():
         userto = None 
         
         userto = db.execute(
-            QUERY, (to_username,)
+            'SELECT id FROM user WHERE username=?', (to_username,)
         ).fetchone()
         
         if userto is None:
