@@ -214,14 +214,15 @@ def forgot():
 
             db = get_db()
             user = db.execute(
-                'SELECT id FROM user WHERE email=?', (email,)
+                'SELECT id FROM user WHERE email=?', (email, )
             ).fetchone()
+
 
             if user is not None:
                 number = hex(random.getrandbits(512))[2:]
                 
                 db.execute(
-                    'SELECT id FROM forgotlink WHERE state=? AND userid=?',
+                    'INSERT INTO forgotlink (state, userid) VALUES (?,?)', 
                     (utils.F_INACTIVE, user['id'])
                 )
                 db.execute(
@@ -231,7 +232,7 @@ def forgot():
                 db.commit()
                 
                 credentials = db.execute(
-                    'Select user,password from credentials where name=?',(utils.EMAIL_APP,)
+                    'Select user,password from credentials where name=?',(utils.EMAIL_APP, )
                 ).fetchone()
                 
                 content = 'Hello there, to change your password, please click on this link ' + flask.url_for('auth.change', _external=True) + '?auth=' + number
